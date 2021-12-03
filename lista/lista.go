@@ -13,7 +13,7 @@ type Lista struct {
 }
 
 type Iterador struct {
-  int posicion
+  posicion int
   lista *Lista
   actual *Nodo
 }
@@ -131,34 +131,34 @@ func (l *Lista) Encontrar(x interface{}) int {
   return -1
 }
 
-func (l *Lista) CrearIteradorLista() *Iterador {
-  return &Iterador{0, l, l.inicio}
-}
-
-func (it *Iterador) Avanzar() {
-  if it.actual == nil {
-    if it.posicion == -1 { it.actual = it.lista.inicio }
-    return
-    } else {
-      it.actual = it.actual.proximo
-    }
-    it.posicion++
-}
-
-func (it *Iterador) Retroceder() {
-  if it.actual == nil {
-    if it.posicion == it.lista.largo { it.actual = it.lista.fin }
-    return
-  } else {
-    it.actual == it.actual.anterior
-  }
-  it.posicion--
-}
-
-func (it *Iterador) VerActual() interface{} {
-  return it.actual.valor
-}
-
-func (it *Iterador) PosicionActual() int {
-  return it.posicion
-}
+// func (l *Lista) CrearIteradorLista() *Iterador {
+//   return &Iterador{0, l, l.inicio}
+// }
+//
+// func (it *Iterador) Avanzar() {
+//   if it.actual == nil {
+//     if it.posicion == -1 { it.actual = it.lista.inicio }
+//     return
+//     } else {
+//       it.actual = it.actual.proximo
+//     }
+//     it.posicion++
+// }
+//
+// func (it *Iterador) Retroceder() {
+//   if it.actual == nil {
+//     if it.posicion == it.lista.largo { it.actual = it.lista.fin }
+//     return
+//   } else {
+//     it.actual == it.actual.anterior
+//   }
+//   it.posicion--
+// }
+//
+// func (it *Iterador) VerActual() interface{} {
+//   return it.actual.valor
+// }
+//
+// func (it *Iterador) PosicionActual() int {
+//   return it.posicion
+// }
