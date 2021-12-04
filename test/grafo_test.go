@@ -71,6 +71,38 @@ func TestVerticeQueNoExiste(t *testing.T) {
   if !ok {t.Error()}
 }
 
+func perteneceASlice(x interface{}, s []interface{}) bool {
+  for _,k := range s {
+    if x == k { return true }
+  }
+  return false
+}
+
+func TestObtenerVertices(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  g.AgregarVertice(1)
+  g.AgregarVertice(2)
+  g.AgregarVertice(3)
+  vertices := g.Vertices()
+  ok := perteneceASlice(2, vertices) && perteneceASlice(1, vertices) &&
+    perteneceASlice(3, vertices) && !perteneceASlice(0, vertices)
+  if !ok {t.Error()}
+}
+
+func TestObtenerVerticesAdyacentes(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  g.AgregarVertice(1)
+  g.AgregarVertice(2)
+  g.AgregarVertice(3)
+  g.AgregarVertice(4)
+  g.AgregarArista(1, 2)
+  g.AgregarArista(1, 4)
+  vertices := g.Adyacentes(1)
+  ok := perteneceASlice(2, vertices) && !perteneceASlice(1, vertices) &&
+    perteneceASlice(4, vertices) && !perteneceASlice(3, vertices)
+  if !ok {t.Error()}
+}
+
 
 // hacer test para algoritmos de recorridos
 // si es conexo, cantidad de componentes conexas (y fuertemente conexas para dirigidos)
