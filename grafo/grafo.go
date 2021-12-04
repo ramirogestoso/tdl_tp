@@ -14,6 +14,11 @@ func (g *Grafo) AgregarVertice(x interface{}) {
   g.grafo[x] = make(map[interface{}]bool)
 }
 
+func (g *Grafo) EliminarVertice(x interface{}) {
+  // si no existe no pasa nada todavia
+  delete(g.grafo, x)
+}
+
 func (g *Grafo) AgregarArista(v interface{}, w interface{}) {
   // panic si no existe v o w
   g.grafo[v][w] = true

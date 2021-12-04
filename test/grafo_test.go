@@ -103,6 +103,35 @@ func TestObtenerVerticesAdyacentes(t *testing.T) {
   if !ok {t.Error()}
 }
 
+func TestEliminarArista(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  g.AgregarVertice(1)
+  g.AgregarVertice(2)
+  g.AgregarVertice(3)
+  g.AgregarArista(1, 2)
+  g.AgregarArista(1, 3)
+  g.AgregarArista(2, 3)
+  g.EliminarArista(1, 2)
+  ok := !g.EstanUnidos(1, 2) && g.EstanUnidos(1, 3)
+  if !ok {t.Error()}
+}
+
+func TestEliminarVertice(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  g.AgregarVertice(1)
+  g.EliminarVertice(1)
+  ok := !g.ExisteVertice(1)
+  if !ok {t.Error()}
+}
+
+
+func TestEliminarVerticeQueNoExiste(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  g.EliminarVertice(1)
+  ok := !g.ExisteVertice(1)
+  if !ok {t.Error()}
+}
+
 
 // hacer test para algoritmos de recorridos
 // si es conexo, cantidad de componentes conexas (y fuertemente conexas para dirigidos)
