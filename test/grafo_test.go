@@ -16,6 +16,15 @@ func TestAgregarVertices(t *testing.T) {
   g.AgregarVertice(1)
   g.AgregarVertice(2)
   g.AgregarVertice(3)
+  ok := g.ExistenVertices(1,2,3)
+  if !ok {t.Error()}
+}
+
+func TestLargo(t *testing.T) {
+  g := grafo.CrearGrafo(true)
+  g.AgregarVertice(1)
+  g.AgregarVertice(2)
+  g.AgregarVertice(3)
   ok := g.Largo() == 3
   if !ok {t.Error()}
 }
@@ -119,16 +128,14 @@ func TestEliminarArista(t *testing.T) {
 func TestEliminarVertice(t *testing.T) {
   g := grafo.CrearGrafo(false)
   g.AgregarVertice(1)
-  g.EliminarVertice(1)
-  ok := !g.ExisteVertice(1)
+  ok := g.EliminarVertice(1) && !g.ExisteVertice(1)
   if !ok {t.Error()}
 }
 
 
 func TestEliminarVerticeQueNoExiste(t *testing.T) {
   g := grafo.CrearGrafo(false)
-  g.EliminarVertice(1)
-  ok := !g.ExisteVertice(1)
+  ok := !g.EliminarVertice(1)
   if !ok {t.Error()}
 }
 

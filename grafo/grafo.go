@@ -14,20 +14,24 @@ func (g *Grafo) AgregarVertice(x interface{}) {
   g.grafo[x] = make(map[interface{}]bool)
 }
 
-func (g *Grafo) EliminarVertice(x interface{}) {
-  // si no existe no pasa nada todavia
-  delete(g.grafo, x)
+func (g *Grafo) EliminarVertice(v interface{}) bool {
+  if !g.ExisteVertice(v) { return false }
+  delete(g.grafo, v)
+  return true
 }
 
-func (g *Grafo) AgregarArista(v interface{}, w interface{}) {
-  // panic si no existe v o w
+func (g *Grafo) AgregarArista(v interface{}, w interface{}) bool {
+  if !g.ExistenVertices(v, w){ return false }
   g.grafo[v][w] = true
   if !g.dirigido { g.grafo[w][v] = true }
+  return true
 }
 
-func (g *Grafo) EliminarArista(v interface{}, w interface{}) {
+func (g *Grafo) EliminarArista(v interface{}, w interface{}) bool {
+  if !g.ExistenVertices(v, w){ return false }
   delete(g.grafo[v], w)
   if !g.dirigido { delete(g.grafo[w], v)}
+  return true
 }
 
 func (g *Grafo) ExisteVertice(v interface{}) bool {
@@ -35,12 +39,21 @@ func (g *Grafo) ExisteVertice(v interface{}) bool {
   return ok
 }
 
+func (g *Grafo) ExistenVertices(vertices ...interface{}) bool {
+  for _, v := range vertices {
+    if _, ok := g.grafo[v]; !ok { return false }
+  }
+  return true
+}
+
 func (g *Grafo) EstanUnidos(v interface{}, w interface{}) bool {
-  _, ok := g.grafo[v][w] // si v o w no existe, devuelve false
+  if !g.ExistenVertices(v, w){ return false }
+  _, ok := g.grafo[v][w]
   return ok
 }
 
 func (g *Grafo) Grado(v interface{}) int {
+  if !g.ExisteVertice(v) { return -1 }
   return len(g.grafo[v])
 }
 
@@ -60,8 +73,8 @@ func (g *Grafo) Vertices() []interface{} {
 }
 
 func (g *Grafo) Adyacentes(v interface{}) []interface{} {
-  _, existe := g.grafo[v]
-  if !existe { return nil }
+  // devuelve in slice con los vertices adyacentes de v si existe, nil si no
+  if !g.ExisteVertice(v) { return nil }
   adyacentes := make([]interface{}, len(g.grafo[v]))
   i:=0
   for k := range g.grafo[v] {
