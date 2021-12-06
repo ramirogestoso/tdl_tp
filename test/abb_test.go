@@ -5,29 +5,35 @@ import (
   "../abb"
 )
 
-func cmp(c1 string, c2 string) int {
+func cmpString(c1 interface{}, c2 interface{}) int {
+  clave1 := c1.(string)
+  clave2 := c2.(string)
   switch {
-  case c2>c1: return -1
-  case c1>c2: return 1
+  case clave2>clave1: return -1
+  case clave1>clave2: return 1
   default: return 0
   }
 }
 
+func cmpInt(c1 interface{}, c2 interface{}) int {
+  return c1.(int) - c2.(int)
+}
+
 func TestAbbNuevoTieneCantidadCero(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   ok := a.Cantidad() == 0
   if !ok {t.Error()}
 }
 
 func TestAbbInsertarUnElementoCantidadEsUno(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("uno", 1)
   ok := a.Cantidad() == 1
   if !ok {t.Error()}
 }
 
 func TestAbbInsertarVariosCantidadCorrecta(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("g", nil)
   a.Insertar("v", nil)
   a.Insertar("c", nil)
@@ -41,23 +47,23 @@ func TestAbbInsertarVariosCantidadCorrecta(t *testing.T) {
 }
 
 func TestAbbConUnElementoPertenece(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("Hola Mundo", 12)
   ok := a.Pertenece("Hola Mundo")
   if !ok {t.Error()}
 }
 
 func TestAbbConVariosElementosPertenecen(t *testing.T) {
-  a := abb.CrearAbb(cmp)
-  a.Insertar("uno", 1)
-  a.Insertar("dos", 2)
-  a.Insertar("tres", 3)
-  ok := a.Pertenece("uno") && a.Pertenece("dos") && a.Pertenece("tres")
+  a := abb.CrearAbb(cmpInt)
+  a.Insertar(1, 1)
+  a.Insertar(2, 2)
+  a.Insertar(3, 3)
+  ok := a.Pertenece(1) && a.Pertenece(2) && a.Pertenece(3)
   if !ok {t.Error()}
 }
 
 func TestAbbConVariosElementosNoPertenece(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("uno", 1)
   a.Insertar("dos", 2)
   a.Insertar("tres", 3)
@@ -66,14 +72,14 @@ func TestAbbConVariosElementosNoPertenece(t *testing.T) {
 }
 
 func TestAbbConUnElementoObtener(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("uno", 2)
   ok := a.Obtener("uno") == 2
   if !ok {t.Error()}
 }
 
 func TestAbbConVariosElementosObtener(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("hola", "mundo")
   a.Insertar("materia", 8109)
   a.Insertar("nil", 21)
@@ -85,7 +91,7 @@ func TestAbbConVariosElementosObtener(t *testing.T) {
 }
 
 func TestAbbNoPerteneceObtenerEsNil(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("uno", 1)
   a.Insertar("dos", 2)
   a.Insertar("tres", 3)
@@ -94,7 +100,7 @@ func TestAbbNoPerteneceObtenerEsNil(t *testing.T) {
 }
 
 func TestAbbConVariosElementosRemoverValorCorrecto(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("hola", "mundo")
   a.Insertar("materia", 8109)
   a.Insertar("nil", 21)
@@ -108,7 +114,7 @@ func TestAbbConVariosElementosRemoverValorCorrecto(t *testing.T) {
 }
 
 func TestAbbConVariosElementosRemoverCantidadReduceEnUno(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("hola", "mundo")
   a.Insertar("materia", 8109)
   a.Insertar("nil", 21)
@@ -123,7 +129,7 @@ func TestAbbConVariosElementosRemoverCantidadReduceEnUno(t *testing.T) {
 }
 
 func TestAbbConUnElementoRemoverValorCorrecto(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("hola", "mundo")
   removido := a.Remover("hola")
   ok := removido == "mundo"
@@ -131,7 +137,7 @@ func TestAbbConUnElementoRemoverValorCorrecto(t *testing.T) {
 }
 
 func TestAbbRemoverYNoPerteneceMas(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("hola", "mundo")
   a.Insertar("materia", 8109)
   a.Insertar("nil", 21)
@@ -145,7 +151,7 @@ func TestAbbRemoverYNoPerteneceMas(t *testing.T) {
 }
 
 func TestRemoverYObtenerDevuelveNil(t *testing.T) {
-  a := abb.CrearAbb(cmp)
+  a := abb.CrearAbb(cmpString)
   a.Insertar("hola", "mundo")
   a.Insertar("materia", 8109)
   a.Insertar("nil", 21)
