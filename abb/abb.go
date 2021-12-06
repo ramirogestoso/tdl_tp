@@ -1,9 +1,12 @@
 package abb
 
-type Cmp func(clave1 string, clave2 string) int
+//si clave1 > clave2 -> devuelve > 0
+// si clave2 > clave1 -> devuelve < 0
+// si clave1 == clave2 -> devuelve 0
+type Cmp func(clave1 interface{}, clave2 interface{}) int
 
 type Nodo struct {
-  clave string
+  clave interface{}
   valor interface{}
   izq *Nodo
   der *Nodo
@@ -19,7 +22,7 @@ func CrearAbb(cmp Cmp) *Abb {
   return &Abb{nil, 0, cmp}
 }
 
-func (abb *Abb) Insertar(clave string, valor interface{}) {
+func (abb *Abb) Insertar(clave interface{}, valor interface{}) {
   abb.cantidad++
   nodo := &Nodo{clave, valor, nil, nil}
   if abb.raiz == nil {
@@ -33,12 +36,12 @@ func (actual *Nodo) insertar(nodo *Nodo, cmp Cmp) {
 
   switch comparacion := cmp(nodo.clave, actual.clave); {
 
-  case comparacion > 0:
+  case comparacion < 0:
       if actual.izq != nil {
         actual.izq.insertar(nodo, cmp)
         } else { actual.izq = nodo }
 
-  case comparacion < 0:
+  case comparacion > 0:
       if actual.der != nil {
         actual.der.insertar(nodo, cmp)
         } else { actual.der = nodo }
@@ -49,7 +52,7 @@ func (actual *Nodo) insertar(nodo *Nodo, cmp Cmp) {
   }
 }
 
-func (abb *Abb) Remover(clave string) interface{} {
+func (abb *Abb) Remover(clave interface{}) interface{} {
   if abb.raiz == nil { return nil }
   nodo := abb.raiz.obtenerReferenciaANodo(clave, abb.cmp)
   if nodo == nil { return nil }
@@ -71,18 +74,18 @@ func (abb *Abb) Remover(clave string) interface{} {
   return valorRemovido
 }
 
-func (nodo *Nodo) obtenerClaveDeReemplazo() string {
+func (nodo *Nodo) obtenerClaveDeReemplazo() interface{} {
   nodo = nodo.der
   for nodo.izq != nil { nodo = nodo.izq }
   return nodo.clave
 }
 
-func (actual *Nodo) obtenerReferenciaANodo(clave string, cmp Cmp) **Nodo {
+func (actual *Nodo) obtenerReferenciaANodo(clave interface{}, cmp Cmp) **Nodo {
   switch comparacion := cmp(clave, actual.clave); {
-  case comparacion > 0:
+  case comparacion < 0:
     if actual.izq == nil { return nil }
     return actual.izq.obtenerReferenciaANodo(clave, cmp)
-  case comparacion < 0:
+  case comparacion > 0:
     if actual.der == nil { return nil }
     return actual.der.obtenerReferenciaANodo(clave, cmp)
   default:
@@ -90,20 +93,20 @@ func (actual *Nodo) obtenerReferenciaANodo(clave string, cmp Cmp) **Nodo {
   }
 }
 
-func (abb *Abb) Pertenece(clave string) bool {
+func (abb *Abb) Pertenece(clave interface{}) bool {
   if abb.raiz == nil { return false }
   return abb.raiz.pertenece(clave, abb.cmp)
 }
 
-func (actual *Nodo) pertenece(clave string, cmp Cmp) bool {
+func (actual *Nodo) pertenece(clave interface{}, cmp Cmp) bool {
 
   switch comparacion := cmp(clave, actual.clave); {
 
-  case comparacion > 0:
+  case comparacion < 0:
     if actual.izq == nil { return false }
     return actual.izq.pertenece(clave, cmp)
 
-  case comparacion < 0:
+  case comparacion > 0:
     if actual.der == nil { return false }
     return actual.der.pertenece(clave, cmp)
 
@@ -112,20 +115,20 @@ func (actual *Nodo) pertenece(clave string, cmp Cmp) bool {
   }
 }
 
-func (abb *Abb) Obtener(clave string) interface{} {
+func (abb *Abb) Obtener(clave interface{}) interface{} {
     if abb.raiz == nil { return nil }
     return abb.raiz.obtener(clave, abb.cmp)
 }
 
-func (actual *Nodo) obtener(clave string, cmp Cmp) interface{} {
+func (actual *Nodo) obtener(clave interface{}, cmp Cmp) interface{} {
 
   switch comparacion := cmp(clave, actual.clave); {
 
-  case comparacion > 0:
+  case comparacion < 0:
     if actual.izq == nil { return nil }
     return actual.izq.obtener(clave, cmp)
 
-  case comparacion < 0:
+  case comparacion > 0:
     if actual.der == nil { return nil }
     return actual.der.obtener(clave, cmp)
 
