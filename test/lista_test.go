@@ -225,3 +225,111 @@ func TestEncontrarElementoEnListaVacia(t *testing.T) {
   ok := l.Encontrar(2) == -1
   if !ok {t.Error()}
 }
+
+/// test iter
+
+func TestIteradorListaVaciaNoCambiaPosicion(t *testing.T) {
+  l := lista.CrearLista()
+  it := l.CrearIterador()
+  ok := !it.Avanzar() && !it.Retroceder()
+  if !ok {t.Error()}
+}
+
+func TestIteradorListaConUnElemento(t *testing.T) {
+  l := lista.CrearLista()
+  l.InsertarUltimo(0)
+  it := l.CrearIterador()
+  ok := it.VerActual() == 0
+  if !ok {t.Error()}
+}
+
+
+func TestIteradorAvanzarAlFinal(t *testing.T) {
+  l := lista.CrearLista()
+  l.InsertarUltimo(0)
+  l.InsertarUltimo(4)
+  it := l.CrearIterador()
+  it.Avanzar()
+  it.Avanzar()
+  ok := !it.Avanzar() && it.VerActual() == nil
+  if !ok {t.Error()}
+}
+
+func TestListaLargaIteradorAvanzarAlFinal(t *testing.T) {
+  l := lista.CrearLista()
+  for i:=0; i<1000; i++ {
+    l.InsertarUltimo(i)
+  }
+  it := l.CrearIterador()
+  for it.Avanzar() { }
+  ok := it.VerActual() == nil
+  if !ok {t.Error()}
+}
+
+func TestListaLargaIteradorVerUltimo(t *testing.T) {
+  l := lista.CrearLista()
+  for i:=0; i<1000; i++ {
+    l.InsertarUltimo(i)
+  }
+  it := l.CrearIterador()
+  for it.Avanzar() { }
+  it.Retroceder()
+  ok := it.VerActual() == 999
+  if !ok {t.Error()}
+}
+
+func TestListaLargaIteradorAvanzarAlFinalYVolverAlInicio(t *testing.T) {
+  l := lista.CrearLista()
+  for i:=0; i<1000; i++ {
+    l.InsertarUltimo(i)
+  }
+  it := l.CrearIterador()
+  for it.Avanzar() {}
+  for it.Retroceder() {}
+  ok := it.VerActual() == nil && it.Avanzar() && it.VerActual() == 0
+  if !ok {t.Error()}
+}
+
+func TestListaLargaIteradorVerActuales(t *testing.T) {
+  l := lista.CrearLista()
+  for i:=0; i<1000; i++ {
+    l.InsertarUltimo(i)
+  }
+  it := l.CrearIterador()
+  k := 0
+  ok := it.VerActual() == k
+  for it.Avanzar() {
+    k++
+    ok = ok && it.VerActual() == k
+  }
+  if !ok {t.Error()}
+}
+
+func TestIteradorAvanzarYRetroceder(t *testing.T) {
+  l := lista.CrearLista()
+  for i:=0; i<5; i++ {
+    l.InsertarUltimo(i)
+  }
+  it := l.CrearIterador()
+
+  ok := it.VerActual() == 0
+  it.Avanzar()
+  ok = ok && it.VerActual() == 1
+  it.Avanzar()
+  ok = ok && it.VerActual() == 2
+  it.Avanzar()
+  ok = ok && it.VerActual() == 3
+  it.Retroceder()
+  ok = ok && it.VerActual() == 2
+  it.Retroceder()
+  ok = ok && it.VerActual() == 1
+  it.Avanzar()
+  ok = ok && it.VerActual() == 2
+  it.Retroceder()
+  it.Retroceder()
+  ok = ok && it.VerActual() == 0
+  ok = ok && !it.Retroceder()
+  ok = ok && it.VerActual() == nil
+
+  if !ok {t.Error()}
+}
