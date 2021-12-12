@@ -2,7 +2,7 @@ package test
 
 import (
   "testing"
-  "../abb"
+  "github.com/ramirogestoso/tp/abb"
 )
 
 func cmpString(c1 interface{}, c2 interface{}) int {

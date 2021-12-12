@@ -2,7 +2,7 @@ package test
 
 import (
   "testing"
-  "../grafo"
+  "github.com/ramirogestoso/tp/grafo"
 )
 
 func TestGrafoVacio(t *testing.T) {
@@ -132,14 +132,101 @@ func TestEliminarVertice(t *testing.T) {
   if !ok {t.Error()}
 }
 
-
 func TestEliminarVerticeQueNoExiste(t *testing.T) {
   g := grafo.CrearGrafo(false)
   ok := !g.EliminarVertice(1)
   if !ok {t.Error()}
 }
 
+func TestEsConexo(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=5; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(1, 3)
+  g.AgregarArista(2, 4)
+  g.AgregarArista(5, 4)
+  g.AgregarArista(5, 3)
+  g.AgregarArista(5, 1)
+  ok := grafo.EsConexo(g)
+  if !ok {t.Error()}
+}
+
+func TestNoEsConexo(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=5; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(1, 3)
+  g.AgregarArista(2, 4)
+  ok := !grafo.EsConexo(g)
+  if !ok {t.Error()}
+}
+
+func TestBipartito(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=6; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(1, 3)
+  g.AgregarArista(1, 5)
+  g.AgregarArista(1, 6)
+  g.AgregarArista(2, 4)
+  g.AgregarArista(5, 4)
+  ok := grafo.EsBipartito(g)
+  if !ok {t.Error()}
+}
+
+func TestNoBipartito(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=6; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(1, 3)
+  g.AgregarArista(1, 5)
+  g.AgregarArista(1, 6)
+  g.AgregarArista(2, 4)
+  g.AgregarArista(5, 4)
+  g.AgregarArista(1, 4)
+  ok := !grafo.EsBipartito(g)
+  if !ok {t.Error()}
+}
+
+func TestTieneCiclo(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=6; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(2, 3)
+  g.AgregarArista(3, 4)
+  g.AgregarArista(4, 5)
+  g.AgregarArista(5, 6)
+  g.AgregarArista(4, 2)
+
+  ok := !grafo.Aciclico(g)
+  if !ok {t.Error()}
+}
+
+func TestNoTieneCiclo(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=6; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(2, 3)
+  g.AgregarArista(3, 4)
+  g.AgregarArista(4, 5)
+  g.AgregarArista(5, 6)
+
+  ok := grafo.Aciclico(g)
+  if !ok {t.Error()}
+}
 
 // hacer test para algoritmos de recorridos
 // si es conexo, cantidad de componentes conexas (y fuertemente conexas para dirigidos)
-// distancias, cantidad a distancia n, bipartito...
+// distancias, cantidad a distancia n, bipartito..., ciclos

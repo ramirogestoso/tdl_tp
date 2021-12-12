@@ -1,7 +1,7 @@
 package test
 
 import (
-	"../hash"
+	"github.com/ramirogestoso/tp/hash"
 	"testing"
 )
 
