@@ -60,10 +60,14 @@ func TestPilaApilarNilNoEstaVacia(t *testing.T) {
   if !ok {t.Error()}
 }
 
-func TestPilaDesapilarPilaVaciaPanic(t *testing.T) {
+func TestPilaDesapilarPilaVaciaDevuelveNil(t *testing.T) {
   p := pila.CrearPila()
-  defer func() {
-    if r:=recover(); r == nil {t.Error()}
-  }()
-  p.Desapilar()
+  ok := p.Desapilar() == nil
+  if !ok {t.Error()}
+}
+
+func TestVerTopeDePilaVaciaEsNil(t *testing.T) {
+  p := pila.CrearPila()
+  ok := p.VerTope() == nil
+  if !ok {t.Error()}
 }
