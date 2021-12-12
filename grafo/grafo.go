@@ -83,3 +83,12 @@ func (g *Grafo) Adyacentes(v interface{}) []interface{} {
   }
   return adyacentes
 }
+
+func (g *Grafo) VerticeAleatorio() interface{} {
+  var v interface{}
+  for w,_ := range g.grafo {
+    v = w
+    break
+  }
+  return v
+}

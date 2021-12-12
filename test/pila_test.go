@@ -1,7 +1,7 @@
 package pila_test
 
 import (
-  "../pila"
+  "github.com/ramirogestoso/tp/pila"
   "testing"
 )
 
