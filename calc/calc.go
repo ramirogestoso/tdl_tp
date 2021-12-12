@@ -7,6 +7,7 @@ import (
   "pila"
   "strconv"
   "math"
+  "bufio"
 )
 
 const (
@@ -21,12 +22,10 @@ const (
 )
 
 func main() {
-  archivo, err := os.ReadFile("oper.txt")
-  if err != nil { panic(err) }
-  lineas := strings.Split(string(archivo), "\n")
-  for _, linea := range lineas {
-    dc(linea)
-  }
+  scanner := bufio.NewScanner(os.Stdin)
+  for scanner.Scan() {
+	   dc(scanner.Text())
+   }
 }
 
 func dc(linea string) {
