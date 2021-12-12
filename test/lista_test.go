@@ -2,7 +2,7 @@ package test
 
 import (
   "testing"
-  "../lista"
+  "github.com/ramirogestoso/tp/lista"
 )
 
 func TestListaNuevaEstaVacia(t *testing.T) {

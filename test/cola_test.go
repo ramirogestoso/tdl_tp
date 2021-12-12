@@ -2,7 +2,7 @@ package test
 
 import (
   "testing"
-  "../cola"
+  "github.com/ramirogestoso/tp/cola"
 )
 
 func TestColaVacia(t *testing.T) {
