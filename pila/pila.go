@@ -19,10 +19,16 @@ func (p *Pila) Apilar(x interface{}) {
 }
 
 func (p *Pila) VerTope() interface{} {
+  if p.tope == nil {
+    return nil
+  }
   return p.tope.valor
 }
 
 func (p *Pila) Desapilar() interface{} {
+  if p.tope == nil {
+    return nil
+  }
   desapilado := p.tope.valor
   p.tope = p.tope.proximo
   return desapilado
