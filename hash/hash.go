@@ -2,13 +2,13 @@ package hash
 
 import "hash/fnv"
 
-const TAMAÑOINICIAL int = 31
+const tamanoINICIAL int = 31
 const PORCENTAJEMAXIMO int = 50
 const PORCENTAJEMINIMO int = 10
 const FACTORREDIMENSION int = 3
 
 type Hash struct {
-	tamaño           int
+	tamano           int
 	cantidadOcupados int
 	cantidadBorrados int
 	nodos            []*Nodo
@@ -29,9 +29,9 @@ func CrearNodo(clave string, dato interface{}) *Nodo {
 }
 
 func CrearHash() *Hash {
-	nodos := make([]*Nodo, TAMAÑOINICIAL)
+	nodos := make([]*Nodo, tamanoINICIAL)
 	return &Hash{
-		tamaño:           TAMAÑOINICIAL,
+		tamano:           tamanoINICIAL,
 		cantidadOcupados: 0,
 		cantidadBorrados: 0,
 		nodos:            nodos,
@@ -39,92 +39,64 @@ func CrearHash() *Hash {
 }
 
 func (hash *Hash) Guardar(clave string, dato interface{}) {
-	if (hash.cantidadBorrados+hash.cantidadOcupados)*100 > PORCENTAJEMAXIMO*hash.tamaño {
-		hash.Redimensionar(hash.tamaño * FACTORREDIMENSION)
+	if (hash.cantidadBorrados+hash.cantidadOcupados)*100 > PORCENTAJEMAXIMO*hash.tamano {
+		hash.redimensionar(hash.tamano * FACTORREDIMENSION)
 	}
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			hash.nodos[posicion].dato = dato
-			if hash.nodos[posicion].borrado {
-				hash.nodos[posicion].borrado = false
-				hash.cantidadBorrados--
-				hash.cantidadOcupados++
-			}
-			return
+	
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo != nil /* la clave ya existe */ {
+		hash.nodos[pos].dato = dato /* actualiza el dato que tenia */
+		if nodo.borrado {
+			//hash.nodos[pos].borrado = false /* deshace borrar */
+			nodo.borrado = false
+			hash.cantidadBorrados--
 		}
-		posicion++
-		if posicion >= uint32(hash.tamaño) {
-			posicion = 0
-		}
+	} else { /* la clave no existe y ya tenemos la posicion deseada */
+		hash.nodos[pos] = CrearNodo(clave, dato)
 	}
-
-	hash.nodos[posicion] = CrearNodo(clave, dato)
 	hash.cantidadOcupados++
-
 }
 
 func (hash *Hash) Borrar(clave string) interface{} {
-	if (hash.cantidadOcupados+hash.cantidadBorrados)*100 <= PORCENTAJEMINIMO*hash.tamaño &&
-		hash.tamaño/FACTORREDIMENSION >= TAMAÑOINICIAL {
-		hash.Redimensionar(hash.tamaño / FACTORREDIMENSION)
+	if (hash.cantidadOcupados+hash.cantidadBorrados)*100 <= PORCENTAJEMINIMO*hash.tamano &&
+		hash.tamano/FACTORREDIMENSION >= tamanoINICIAL {
+		hash.redimensionar(hash.tamano / FACTORREDIMENSION)
 	}
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			if !hash.nodos[posicion].borrado {
-				hash.nodos[posicion].borrado = true
-				hash.cantidadBorrados++
-				hash.cantidadOcupados--
-				return hash.nodos[posicion].dato
-			}
-			break
-		}
-		posicion++
-		if posicion >= uint32(hash.tamaño) {
-			posicion = 0
-		}
-	}
-	return nil
+
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo == nil || nodo.borrado { return nil }
+	hash.nodos[pos].borrado = true
+	hash.cantidadBorrados++
+	hash.cantidadOcupados--
+	return hash.nodos[pos].dato
 }
 
 func (hash *Hash) Obtener(clave string) interface{} {
-
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			if hash.nodos[posicion].borrado {
-				break
-			}
-			return hash.nodos[posicion].dato
-		}
-		posicion++
-		if posicion >= uint32(hash.tamaño) {
-			posicion = 0
-		}
-	}
-
-	return nil
-
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo == nil || nodo.borrado { return nil }
+	return hash.nodos[pos].dato
 }
 
 func (hash *Hash) Pertenece(clave string) bool {
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo == nil || nodo.borrado { return false }
+	return true
+}
 
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			if hash.nodos[posicion].borrado {
-				break
-			}
-			return true
-		}
+func (hash *Hash) obtenerPosicionNodo(clave string) int {
+	/* devuelve la posicion donde deberia estar el nodo */
+	posicion := funcionHashing(clave) % uint32(hash.tamano)
+	for hash.nodos[posicion] != nil && hash.nodos[posicion].clave != clave {
 		posicion++
-		if posicion >= uint32(hash.tamaño) {
+		if posicion >= uint32(hash.tamano) {
 			posicion = 0
 		}
 	}
-
-	return false
+	return int(posicion)
 }
 
 func (hash *Hash) DatoPertenece(dato interface{}) bool {
@@ -140,10 +112,10 @@ func (hash *Hash) Largo() int {
 	return hash.cantidadOcupados
 }
 
-func (hash *Hash) Redimensionar(nuevoTamaño int) {
+func (hash *Hash) redimensionar(nuevotamano int) {
 	nodosAnterior := hash.nodos
-	nuevoSlice := make([]*Nodo, nuevoTamaño)
-	hash.tamaño = nuevoTamaño
+	nuevoSlice := make([]*Nodo, nuevotamano)
+	hash.tamano = nuevotamano
 	hash.cantidadBorrados = 0
 	hash.cantidadOcupados = 0
 	hash.nodos = nuevoSlice
