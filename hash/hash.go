@@ -42,26 +42,20 @@ func (hash *Hash) Guardar(clave string, dato interface{}) {
 	if (hash.cantidadBorrados+hash.cantidadOcupados)*100 > PORCENTAJEMAXIMO*hash.tamano {
 		hash.redimensionar(hash.tamano * FACTORREDIMENSION)
 	}
-	posicion := funcionHashing(clave) % uint32(hash.tamano)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			hash.nodos[posicion].dato = dato
-			if hash.nodos[posicion].borrado {
-				hash.nodos[posicion].borrado = false
-				hash.cantidadBorrados--
-				hash.cantidadOcupados++
-			}
-			return
+	
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo != nil /* la clave ya existe */ {
+		hash.nodos[pos].dato = dato /* actualiza el dato que tenia */
+		if nodo.borrado {
+			//hash.nodos[pos].borrado = false /* deshace borrar */
+			nodo.borrado = false
+			hash.cantidadBorrados--
 		}
-		posicion++
-		if posicion >= uint32(hash.tamano) {
-			posicion = 0
-		}
+	} else { /* la clave no existe y ya tenemos la posicion deseada */
+		hash.nodos[pos] = CrearNodo(clave, dato)
 	}
-
-	hash.nodos[posicion] = CrearNodo(clave, dato)
 	hash.cantidadOcupados++
-
 }
 
 func (hash *Hash) Borrar(clave string) interface{} {
@@ -70,41 +64,39 @@ func (hash *Hash) Borrar(clave string) interface{} {
 		hash.redimensionar(hash.tamano / FACTORREDIMENSION)
 	}
 
-	nodo := hash.obtenerNodo(clave)
-	if nodo == nil { return nil } // no existe o esta borrado ya
-	nodo.borrado = true
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo == nil || nodo.borrado { return nil }
+	hash.nodos[pos].borrado = true
 	hash.cantidadBorrados++
 	hash.cantidadOcupados--
-	return nodo.dato
+	return hash.nodos[pos].dato
 }
 
 func (hash *Hash) Obtener(clave string) interface{} {
-	nodo := hash.obtenerNodo(clave)
-	if nodo == nil { return nil } // no existe o esta borrado
-	return nodo.dato
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo == nil || nodo.borrado { return nil }
+	return hash.nodos[pos].dato
 }
 
 func (hash *Hash) Pertenece(clave string) bool {
-	nodo := hash.obtenerNodo(clave)
-	if nodo == nil { return false } // no existe o esta borrado
+	pos := hash.obtenerPosicionNodo(clave)
+	nodo := hash.nodos[pos]
+	if nodo == nil || nodo.borrado { return false }
 	return true
 }
 
-func (hash *Hash) obtenerNodo(clave string) *Nodo {
+func (hash *Hash) obtenerPosicionNodo(clave string) int {
+	/* devuelve la posicion donde deberia estar el nodo */
 	posicion := funcionHashing(clave) % uint32(hash.tamano)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			if hash.nodos[posicion].borrado {
-				break
-			}
-			return hash.nodos[posicion]
-		}
+	for hash.nodos[posicion] != nil && hash.nodos[posicion].clave != clave {
 		posicion++
 		if posicion >= uint32(hash.tamano) {
 			posicion = 0
 		}
 	}
-	return nil
+	return int(posicion)
 }
 
 func (hash *Hash) DatoPertenece(dato interface{}) bool {

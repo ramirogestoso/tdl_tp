@@ -72,6 +72,20 @@ func TestTresNuevasClavesObtener(t *testing.T) {
 	}
 }
 
+func TestActualizarClave(t *testing.T) {
+	hash := hash.CrearHash()
+	hash.Guardar("mascota", "Perro")
+	hash.Guardar("edad", "24")
+	hash.Guardar("generro", "Masculino")
+	ok := hash.Obtener("mascota") == "Perro"
+	hash.Guardar("mascota", "Gato")
+	ok = ok && hash.Obtener("mascota") == "Gato"
+
+	if !ok {
+		t.Error()
+	}
+}
+
 func TestNuevasClavesTamañoHash(t *testing.T) {
 	hash := hash.CrearHash()
 	hash.Guardar("mascota", "Perro")
@@ -118,6 +132,20 @@ func TestBorrarClave(t *testing.T) {
 	hash.Guardar("generro", "Masculino")
 	hash.Borrar("mascota")
 	ok := !hash.Pertenece("mascota")
+
+	if !ok {
+		t.Error()
+	}
+}
+
+func TestBorrarYVolverAGuardar(t *testing.T) {
+	hash := hash.CrearHash()
+	hash.Guardar("mascota", "Perro")
+	hash.Guardar("edad", "24")
+	hash.Guardar("generro", "Masculino")
+	hash.Borrar("mascota")
+	hash.Guardar("mascota", "Gato")
+	ok := hash.Pertenece("mascota")
 
 	if !ok {
 		t.Error()
