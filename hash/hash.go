@@ -2,13 +2,13 @@ package hash
 
 import "hash/fnv"
 
-const TAMAÑOINICIAL int = 31
+const tamanoINICIAL int = 31
 const PORCENTAJEMAXIMO int = 50
 const PORCENTAJEMINIMO int = 10
 const FACTORREDIMENSION int = 3
 
 type Hash struct {
-	tamaño           int
+	tamano           int
 	cantidadOcupados int
 	cantidadBorrados int
 	nodos            []*Nodo
@@ -29,9 +29,9 @@ func CrearNodo(clave string, dato interface{}) *Nodo {
 }
 
 func CrearHash() *Hash {
-	nodos := make([]*Nodo, TAMAÑOINICIAL)
+	nodos := make([]*Nodo, tamanoINICIAL)
 	return &Hash{
-		tamaño:           TAMAÑOINICIAL,
+		tamano:           tamanoINICIAL,
 		cantidadOcupados: 0,
 		cantidadBorrados: 0,
 		nodos:            nodos,
@@ -39,10 +39,10 @@ func CrearHash() *Hash {
 }
 
 func (hash *Hash) Guardar(clave string, dato interface{}) {
-	if (hash.cantidadBorrados+hash.cantidadOcupados)*100 > PORCENTAJEMAXIMO*hash.tamaño {
-		hash.Redimensionar(hash.tamaño * FACTORREDIMENSION)
+	if (hash.cantidadBorrados+hash.cantidadOcupados)*100 > PORCENTAJEMAXIMO*hash.tamano {
+		hash.Redimensionar(hash.tamano * FACTORREDIMENSION)
 	}
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
+	posicion := funcionHashing(clave) % uint32(hash.tamano)
 	for hash.nodos[posicion] != nil {
 		if hash.nodos[posicion].clave == clave {
 			hash.nodos[posicion].dato = dato
@@ -54,7 +54,7 @@ func (hash *Hash) Guardar(clave string, dato interface{}) {
 			return
 		}
 		posicion++
-		if posicion >= uint32(hash.tamaño) {
+		if posicion >= uint32(hash.tamano) {
 			posicion = 0
 		}
 	}
@@ -65,66 +65,46 @@ func (hash *Hash) Guardar(clave string, dato interface{}) {
 }
 
 func (hash *Hash) Borrar(clave string) interface{} {
-	if (hash.cantidadOcupados+hash.cantidadBorrados)*100 <= PORCENTAJEMINIMO*hash.tamaño &&
-		hash.tamaño/FACTORREDIMENSION >= TAMAÑOINICIAL {
-		hash.Redimensionar(hash.tamaño / FACTORREDIMENSION)
+	if (hash.cantidadOcupados+hash.cantidadBorrados)*100 <= PORCENTAJEMINIMO*hash.tamano &&
+		hash.tamano/FACTORREDIMENSION >= tamanoINICIAL {
+		hash.Redimensionar(hash.tamano / FACTORREDIMENSION)
 	}
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			if !hash.nodos[posicion].borrado {
-				hash.nodos[posicion].borrado = true
-				hash.cantidadBorrados++
-				hash.cantidadOcupados--
-				return hash.nodos[posicion].dato
-			}
-			break
-		}
-		posicion++
-		if posicion >= uint32(hash.tamaño) {
-			posicion = 0
-		}
-	}
-	return nil
+	
+	nodo := hash.obtenerNodo(clave)
+	if nodo == nil { return nil } // no existe o esta borrado ya
+	nodo.borrado = true
+	hash.cantidadBorrados++
+	hash.cantidadOcupados--
+	return nodo.dato
 }
 
 func (hash *Hash) Obtener(clave string) interface{} {
-
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
-	for hash.nodos[posicion] != nil {
-		if hash.nodos[posicion].clave == clave {
-			if hash.nodos[posicion].borrado {
-				break
-			}
-			return hash.nodos[posicion].dato
-		}
-		posicion++
-		if posicion >= uint32(hash.tamaño) {
-			posicion = 0
-		}
-	}
-
-	return nil
-
+	nodo := hash.obtenerNodo(clave)
+	if nodo == nil { return nil } // no existe o esta borrado
+	return nodo.dato
 }
 
 func (hash *Hash) Pertenece(clave string) bool {
+	nodo := hash.obtenerNodo(clave)
+	if nodo == nil { return false } // no existe o esta borrado
+	return true
+}
 
-	posicion := funcionHashing(clave) % uint32(hash.tamaño)
+func (hash *Hash) obtenerNodo(clave string) *Nodo {
+	posicion := funcionHashing(clave) % uint32(hash.tamano)
 	for hash.nodos[posicion] != nil {
 		if hash.nodos[posicion].clave == clave {
 			if hash.nodos[posicion].borrado {
 				break
 			}
-			return true
+			return hash.nodos[posicion]
 		}
 		posicion++
-		if posicion >= uint32(hash.tamaño) {
+		if posicion >= uint32(hash.tamano) {
 			posicion = 0
 		}
 	}
-
-	return false
+	return nil
 }
 
 func (hash *Hash) DatoPertenece(dato interface{}) bool {
@@ -140,10 +120,10 @@ func (hash *Hash) Largo() int {
 	return hash.cantidadOcupados
 }
 
-func (hash *Hash) Redimensionar(nuevoTamaño int) {
+func (hash *Hash) Redimensionar(nuevotamano int) {
 	nodosAnterior := hash.nodos
-	nuevoSlice := make([]*Nodo, nuevoTamaño)
-	hash.tamaño = nuevoTamaño
+	nuevoSlice := make([]*Nodo, nuevotamano)
+	hash.tamano = nuevotamano
 	hash.cantidadBorrados = 0
 	hash.cantidadOcupados = 0
 	hash.nodos = nuevoSlice
