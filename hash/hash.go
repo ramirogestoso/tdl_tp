@@ -2,7 +2,7 @@ package hash
 
 import "hash/fnv"
 
-const tamanoINICIAL int = 31
+const TAMANOINICIAL int = 31
 const PORCENTAJEMAXIMO int = 50
 const PORCENTAJEMINIMO int = 10
 const FACTORREDIMENSION int = 3
@@ -29,9 +29,9 @@ func CrearNodo(clave string, dato interface{}) *Nodo {
 }
 
 func CrearHash() *Hash {
-	nodos := make([]*Nodo, tamanoINICIAL)
+	nodos := make([]*Nodo, TAMANOINICIAL)
 	return &Hash{
-		tamano:           tamanoINICIAL,
+		tamano:           TAMANOINICIAL,
 		cantidadOcupados: 0,
 		cantidadBorrados: 0,
 		nodos:            nodos,
@@ -42,13 +42,12 @@ func (hash *Hash) Guardar(clave string, dato interface{}) {
 	if (hash.cantidadBorrados+hash.cantidadOcupados)*100 > PORCENTAJEMAXIMO*hash.tamano {
 		hash.redimensionar(hash.tamano * FACTORREDIMENSION)
 	}
-	
+
 	pos := hash.obtenerPosicionNodo(clave)
 	nodo := hash.nodos[pos]
-	if nodo != nil /* la clave ya existe */ {
+	if nodo != nil { /* la clave ya existe */
 		hash.nodos[pos].dato = dato /* actualiza el dato que tenia */
 		if nodo.borrado {
-			//hash.nodos[pos].borrado = false /* deshace borrar */
 			nodo.borrado = false
 			hash.cantidadBorrados--
 		}
@@ -60,24 +59,24 @@ func (hash *Hash) Guardar(clave string, dato interface{}) {
 
 func (hash *Hash) Borrar(clave string) interface{} {
 	if (hash.cantidadOcupados+hash.cantidadBorrados)*100 <= PORCENTAJEMINIMO*hash.tamano &&
-		hash.tamano/FACTORREDIMENSION >= tamanoINICIAL {
+		hash.tamano/FACTORREDIMENSION >= TAMANOINICIAL {
 		hash.redimensionar(hash.tamano / FACTORREDIMENSION)
 	}
 
 	pos := hash.obtenerPosicionNodo(clave)
 	nodo := hash.nodos[pos]
 	if nodo == nil || nodo.borrado { return nil }
-	hash.nodos[pos].borrado = true
+	nodo.borrado = true
 	hash.cantidadBorrados++
 	hash.cantidadOcupados--
-	return hash.nodos[pos].dato
+	return nodo.dato
 }
 
 func (hash *Hash) Obtener(clave string) interface{} {
 	pos := hash.obtenerPosicionNodo(clave)
 	nodo := hash.nodos[pos]
 	if nodo == nil || nodo.borrado { return nil }
-	return hash.nodos[pos].dato
+	return nodo.dato
 }
 
 func (hash *Hash) Pertenece(clave string) bool {
