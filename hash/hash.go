@@ -40,7 +40,7 @@ func CrearHash() *Hash {
 
 func (hash *Hash) Guardar(clave string, dato interface{}) {
 	if (hash.cantidadBorrados+hash.cantidadOcupados)*100 > PORCENTAJEMAXIMO*hash.tamano {
-		hash.Redimensionar(hash.tamano * FACTORREDIMENSION)
+		hash.redimensionar(hash.tamano * FACTORREDIMENSION)
 	}
 	posicion := funcionHashing(clave) % uint32(hash.tamano)
 	for hash.nodos[posicion] != nil {
@@ -67,9 +67,9 @@ func (hash *Hash) Guardar(clave string, dato interface{}) {
 func (hash *Hash) Borrar(clave string) interface{} {
 	if (hash.cantidadOcupados+hash.cantidadBorrados)*100 <= PORCENTAJEMINIMO*hash.tamano &&
 		hash.tamano/FACTORREDIMENSION >= tamanoINICIAL {
-		hash.Redimensionar(hash.tamano / FACTORREDIMENSION)
+		hash.redimensionar(hash.tamano / FACTORREDIMENSION)
 	}
-	
+
 	nodo := hash.obtenerNodo(clave)
 	if nodo == nil { return nil } // no existe o esta borrado ya
 	nodo.borrado = true
@@ -120,7 +120,7 @@ func (hash *Hash) Largo() int {
 	return hash.cantidadOcupados
 }
 
-func (hash *Hash) Redimensionar(nuevotamano int) {
+func (hash *Hash) redimensionar(nuevotamano int) {
 	nodosAnterior := hash.nodos
 	nuevoSlice := make([]*Nodo, nuevotamano)
 	hash.tamano = nuevotamano
