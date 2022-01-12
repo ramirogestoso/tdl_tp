@@ -9,7 +9,8 @@ func EsConexo(grafo *Grafo) bool {
   v := grafo.VerticeAleatorio()
   visitarAdyacentes(grafo, visitados, v)
   for _, w := range grafo.Vertices() {
-    if _, visitado := visitados[w]; !visitado { return false }
+    _, visitado := visitados[w]
+    if !visitado { return false }
   }
   return true
 }
@@ -61,5 +62,31 @@ func _esBipartito(grafo *Grafo, padres map[interface{}]interface{}, vi interface
 }
 
 func Aciclico(grafo *Grafo) bool {
+  padres := make(map[interface{}]interface{})
+  for _, v := range grafo.Vertices() {
+    _, visitado := padres[v]
+    if !visitado {
+      if !_esAciclico(grafo, padres, v) { return false }
+    }
+  }
+  return true
+}
+
+func _esAciclico(grafo *Grafo, padres map[interface{}]interface{}, vi interface{}) bool {
+  cola := cola.CrearCola()
+  cola.Encolar(vi)
+  padres[vi] = nil
+  for !cola.EstaVacia() {
+    v := cola.Desencolar()
+    for _, w := range grafo.Adyacentes(v) {
+      _, fueVisitadoW := padres[w]
+      if !fueVisitadoW {
+        padres[w] = v
+        cola.Encolar(w)
+      } else {
+        if w != padres[v] { return false }
+      }
+    }
+  }
   return true
 }
