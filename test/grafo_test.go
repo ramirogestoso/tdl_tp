@@ -227,6 +227,33 @@ func TestNoTieneCiclo(t *testing.T) {
   if !ok {t.Error()}
 }
 
-// hacer test para algoritmos de recorridos
-// si es conexo, cantidad de componentes conexas (y fuertemente conexas para dirigidos)
-// distancias, cantidad a distancia n, bipartito..., ciclos
+func TestNoTieneCicloConDosComponentesConexas(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=6; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(2, 3)
+
+  g.AgregarArista(4, 5)
+  g.AgregarArista(5, 6)
+
+  ok := grafo.Aciclico(g)
+  if !ok {t.Error()}
+}
+
+func TestTieneCicloConDosComponentesConexas(t *testing.T) {
+  g := grafo.CrearGrafo(false)
+  for i:=1; i<=6; i++ {
+    g.AgregarVertice(i)
+  }
+  g.AgregarArista(1, 2)
+  g.AgregarArista(2, 3)
+
+  g.AgregarArista(4, 5)
+  g.AgregarArista(5, 6)
+  g.AgregarArista(6, 4)
+
+  ok := !grafo.Aciclico(g)
+  if !ok {t.Error()}
+}
