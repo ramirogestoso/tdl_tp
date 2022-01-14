@@ -24,12 +24,10 @@ func CalcularLinea(linea string) {
   elementos := strings.Split(linea, " ")
 
   for _, elemento := range elementos {
-    num, esNum := strToInt(elemento)
-    operador, esOp := strToOp(elemento)
 
-    if esNum {
+    if num, esNum := strToInt(elemento); esNum {
       pilaNumeros.Apilar(num)
-    } else if esOp {
+    } else if operador, esOp := strToOp(elemento); esOp {
       resultado, ok := operar(operador, pilaNumeros)
       if !ok { // falla al operar
         fmt.Println(ERROR)
